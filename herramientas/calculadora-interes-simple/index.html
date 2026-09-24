@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora de Interés Simple</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <button class="history-btn" onclick="irAlTablero()" aria-label="Ir al tablero">
+      <i class="fas fa-table-list"></i> Tablero
+    </button>
+    <h1><i class="fas fa-calculator"></i> Calculadora de Interés Simple</h1>
+    <p>Préstamos con corte de interés por mes calendario</p>
+  </header>
+
+  <div class="card">
+    <h2><i class="fas fa-file-invoice-dollar"></i> Datos del préstamo</h2>
+    <div class="field">
+      <label for="capital">Monto prestado</label>
+      <input type="number" id="capital" placeholder="Ej. 1000" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label for="fechaInicio">Fecha de inicio del préstamo</label>
+      <input type="date" id="fechaInicio">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="tasa">Tasa total (%)</label>
+        <input type="number" id="tasa" value="10" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="plazo">Plazo (días)</label>
+        <input type="number" id="plazo" value="24" inputmode="numeric">
+      </div>
+    </div>
+    <div class="field">
+      <label for="impuesto">Impuesto sobre el interés (%)</label>
+      <input type="number" id="impuesto" value="5" inputmode="decimal">
+    </div>
+    <button class="calc" onclick="calcular()"><i class="fas fa-circle-check"></i> Calcular</button>
+  </div>
+
+  <div id="resultados" class="hidden">
+    <div class="card">
+      <h2><i class="fas fa-chart-line"></i> Resumen</h2>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="label">Tasa diaria</div>
+          <div class="value" id="tasaDiaria">-</div>
+        </div>
+        <div class="stat">
+          <div class="label">Último día con interés</div>
+          <div class="value" id="fechaFin">-</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><i class="fas fa-table-list"></i> Desglose de interés por mes</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Mes</th><th>Días</th><th>Interés</th></tr>
+          </thead>
+          <tbody id="tablaBody"></tbody>
+        </table>
+      </div>
+      <div id="cruceNota" class="note hidden">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span id="cruceNotaTexto"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><i class="fas fa-receipt"></i> Totales</h2>
+      <div class="total-line">
+        <span class="lbl">Interés total (24 días)</span>
+        <span id="interesTotal">-</span>
+      </div>
+      <div class="total-line">
+        <span class="lbl">Impuesto (<span id="impPctLbl">5</span>%)</span>
+        <span id="impuestoTotal">-</span>
+      </div>
+      <div class="total-line">
+        <span class="lbl">Interés neto (después de impuesto)</span>
+        <span id="interesNeto">-</span>
+      </div>
+      <div class="total-line big">
+        <span class="lbl">Total a pagar (capital + interés)</span>
+        <span id="totalPagar">-</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="tablero" class="card">
+    <h2><i class="fas fa-table-cells-large"></i> Tablero de datos acumulado</h2>
+    <div id="ledgerContenedor"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
