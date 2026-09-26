@@ -144,18 +144,18 @@ function renderLedger() {
       <table class="ledger-table">
         <thead>
           <tr>
-            <th class="center">N°</th>
-            <th class="center">N° Contrato</th>
-            <th>Fecha factura 1</th>
-            <th class="num">Monto</th>
-            <th class="num">Interés 1</th>
-            <th class="num">Impuesto 1</th>
-            <th>Fecha factura 2</th>
-            <th class="num">Interés 2</th>
-            <th class="num">Impuesto 2</th>
-            <th class="num">Interés total</th>
-            <th class="num">Impuesto total</th>
-            <th class="center">Quitar</th>
+            <th class="center" title="Número de fila en la tabla">N°</th>
+            <th class="center" title="Número de contrato (correlativo permanente)">N° Contrato</th>
+            <th title="Fecha factura 1">Fecha F1</th>
+            <th class="num" title="Monto prestado">Monto</th>
+            <th class="num" title="Interés 1">Int. 1</th>
+            <th class="num" title="Impuesto 1">Imp. 1</th>
+            <th title="Fecha factura 2">Fecha F2</th>
+            <th class="num" title="Interés 2">Int. 2</th>
+            <th class="num" title="Impuesto 2">Imp. 2</th>
+            <th class="num" title="Interés total">Int. total</th>
+            <th class="num" title="Impuesto total">Imp. total</th>
+            <th class="center" title="Quitar registro">Quitar</th>
           </tr>
         </thead>
         <tbody>${filas}</tbody>
@@ -310,6 +310,20 @@ function calcular() {
     tr.innerHTML = `<td>${etiqueta}</td><td>${g.dias}</td><td>${fmt(interesGrupo)}</td>`;
     tbody.appendChild(tr);
   });
+
+  // --- Desglose diario (solo visual, no se guarda en el tablero) ---
+  const tbodyDiario = document.getElementById('tablaDiaria');
+  tbodyDiario.innerHTML = '';
+  const interesDia = capital * tasaDiaria;
+  let acumulado = 0;
+  const fechaDia = new Date(fechaInicioObj);
+  for (let i = 1; i <= plazoDias; i++) {
+    acumulado += interesDia;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i}</td><td>${fechaCorta(fechaDia)}</td><td>${fmt(interesDia)}</td><td>${fmt(acumulado)}</td>`;
+    tbodyDiario.appendChild(tr);
+    fechaDia.setDate(fechaDia.getDate() + 1);
+  }
 
   const notaEl = document.getElementById('cruceNota');
   if (grupos.length > 1) {

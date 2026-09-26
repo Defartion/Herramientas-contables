@@ -125,6 +125,19 @@ tr:last-child td { border-bottom: none; }
 .hidden { display: none; }
 
 /* Tablero acumulado */
+/* La tarjeta del tablero puede ser más ancha que el resto de la página
+   (centrada respecto al viewport) para que las 12 columnas quepan sin
+   scroll horizontal en pantallas de escritorio. En pantallas angostas
+   sigue habiendo scroll horizontal dentro de .table-wrap. */
+#tablero {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1080px, 100vw - 32px);
+}
+.ledger-table { font-size: 0.8rem; }
+.ledger-table th, .ledger-table td { padding: 6px 5px; }
+.ledger-table th { font-size: 0.68rem; }
 .ledger-table td.num, .ledger-table th.num { text-align: right; }
 .ledger-table td.center, .ledger-table th.center { text-align: center; }
 .ledger-table tfoot td {
@@ -147,3 +160,9 @@ tr:last-child td { border-bottom: none; }
   cursor: pointer; margin-bottom: 12px; box-shadow: var(--shadow);
 }
 .export-btn:active { opacity: 0.85; }
+
+/* Desglose diario: tabla larga dentro de un contenedor con scroll vertical */
+.daily-wrap { max-height: 320px; overflow-y: auto; }
+.daily-wrap thead th {
+  position: sticky; top: 0; background: var(--card-bg);
+}
