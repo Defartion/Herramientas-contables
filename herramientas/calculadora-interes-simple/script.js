@@ -185,6 +185,71 @@ function irAlTablero() {
   document.getElementById('tablero').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function exportarExcel() {
+  const lista = leerLedger().slice().sort((a, b) => a.fechaInicioISO.localeCompare(b.fechaInicioISO));
+  if (!lista.length) {
+    alert('No hay registros en el tablero para exportar.');
+    return;
+  }
+  if (typeof XLSX === 'undefined') {
+    alert('No se pudo cargar la librería de Excel. Revisa tu conexión a internet e intenta de nuevo.');
+    return;
+  }
+
+  const red = n => Math.round(n * 100) / 100;
+
+  const encabezado = [
+    'N°', 'N° Contrato', 'Fecha factura 1', 'Monto', 'Interés 1', 'Impuesto 1',
+    'Fecha factura 2', 'Interés 2', 'Impuesto 2', 'Interés total', 'Impuesto total'
+  ];
+
+  let totalMonto = 0, totalInt1 = 0, totalImp1 = 0, totalInt2 = 0, totalImp2 = 0, totalIntGen = 0, totalImpGen = 0;
+
+  const filas = lista.map((r, idx) => {
+    totalMonto += r.capital;
+    totalInt1 += r.interes1;
+    totalImp1 += r.impuesto1;
+    totalInt2 += r.interes2 || 0;
+    totalImp2 += r.impuesto2 || 0;
+    totalIntGen += r.interes1 + (r.interes2 || 0);
+    totalImpGen += r.impuesto1 + (r.impuesto2 || 0);
+
+    return [
+      idx + 1,
+      r.numeroContrato,
+      r.fechaFactura1,
+      red(r.capital),
+      red(r.interes1),
+      red(r.impuesto1),
+      r.fechaFactura2 || '-',
+      r.interes2 != null ? red(r.interes2) : '-',
+      r.impuesto2 != null ? red(r.impuesto2) : '-',
+      red(r.interes1 + (r.interes2 || 0)),
+      red(r.impuesto1 + (r.impuesto2 || 0))
+    ];
+  });
+
+  const filaTotales = [
+    'Σ', '', 'Totales',
+    red(totalMonto), red(totalInt1), red(totalImp1),
+    '', red(totalInt2), red(totalImp2),
+    red(totalIntGen), red(totalImpGen)
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet([encabezado, ...filas, filaTotales]);
+  ws['!cols'] = [
+    { wch: 5 }, { wch: 12 }, { wch: 16 }, { wch: 12 }, { wch: 11 }, { wch: 11 },
+    { wch: 16 }, { wch: 11 }, { wch: 11 }, { wch: 13 }, { wch: 13 }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Tablero');
+
+  const hoy = new Date();
+  const iso = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
+  XLSX.writeFile(wb, `tablero-interes-simple-${iso}.xlsx`);
+}
+
 // ---------- Cálculo principal ----------
 function calcular() {
   const capitalInput = document.getElementById('capital').value;
@@ -275,19 +340,26 @@ function calcular() {
   const interes1 = capital * tasaDiaria * tramo1.dias;
   const impuesto1 = interes1 * impuestoPct;
 
+  // Factura 1: se cobra al terminar los días de interés del primer mes
+  // (fecha de inicio + días del tramo 1 - 1).
+  const f1 = new Date(fechaInicioObj);
+  f1.setDate(f1.getDate() + tramo1.dias - 1);
+  const fechaFactura1 = fechaCorta(f1);
+
   let fechaFactura2 = null, interes2 = null, impuesto2 = null;
   if (grupos.length > 1) {
     const diasTramo2 = grupos.slice(1).reduce((acc, g) => acc + g.dias, 0);
     interes2 = capital * tasaDiaria * diasTramo2;
     impuesto2 = interes2 * impuestoPct;
-    const segundo = grupos[1];
-    fechaFactura2 = fechaCorta(new Date(segundo.year, segundo.month, 1));
+    // Factura 2: se cobra el último día con interés de todo el préstamo.
+    fechaFactura2 = fechaCorta(ultimoDia);
   }
 
   agregarAlLedger({
     id: Date.now() + Math.floor(Math.random() * 1000),
+    numeroContrato: siguienteNumeroContrato(),
     fechaInicioISO: fechaInicioStr,
-    fechaFactura1: fechaCorta(fechaInicioObj),
+    fechaFactura1: fechaFactura1,
     capital: capital,
     interes1: interes1,
     impuesto1: impuesto1,

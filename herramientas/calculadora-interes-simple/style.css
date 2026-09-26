@@ -140,3 +140,10 @@ tr:last-child td { border-bottom: none; }
   background: none; color: var(--danger); font-size: 0.88rem; margin-top: 12px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 6px;
 }
+.export-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--card-bg); color: var(--good); font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; margin-bottom: 12px; box-shadow: var(--shadow);
+}
+.export-btn:active { opacity: 0.85; }
