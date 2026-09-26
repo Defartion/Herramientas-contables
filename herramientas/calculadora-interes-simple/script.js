@@ -18,11 +18,55 @@ function fechaCorta(d) {
 
 // ---------- Persistencia del tablero acumulado ----------
 const LEDGER_KEY = 'interesSimpleTableroLedger';
+const CONTADOR_KEY = 'interesSimpleContratoContador';
+
+function leerContador() {
+  try {
+    const n = parseInt(localStorage.getItem(CONTADOR_KEY), 10);
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function guardarContador(n) {
+  try {
+    localStorage.setItem(CONTADOR_KEY, String(n));
+  } catch (e) {
+    console.warn('No se pudo guardar el contador de contratos:', e);
+  }
+}
+
+function siguienteNumeroContrato() {
+  const n = leerContador() + 1;
+  guardarContador(n);
+  return n;
+}
 
 function leerLedger() {
   try {
     const raw = localStorage.getItem(LEDGER_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const lista = raw ? JSON.parse(raw) : [];
+
+    // Migración: los registros antiguos no tienen numeroContrato.
+    // Se les asigna uno nuevo la primera vez que se leen, sin tocar
+    // el resto de sus datos, y se persiste el resultado.
+    let contador = Math.max(leerContador(), lista.reduce((max, r) =>
+      (typeof r.numeroContrato === 'number' && r.numeroContrato > max) ? r.numeroContrato : max, 0));
+    let huboMigracion = false;
+    lista.forEach(r => {
+      if (typeof r.numeroContrato !== 'number') {
+        contador += 1;
+        r.numeroContrato = contador;
+        huboMigracion = true;
+      }
+    });
+    if (huboMigracion) {
+      guardarContador(contador);
+      guardarLedger(lista);
+    }
+
+    return lista;
   } catch (e) {
     console.warn('No se pudo leer el tablero:', e);
     return [];
@@ -81,6 +125,7 @@ function renderLedger() {
     return `
       <tr>
         <td class="col-nro">${idx + 1}</td>
+        <td class="col-nro">${r.numeroContrato}</td>
         <td>${r.fechaFactura1}</td>
         <td class="num">${fmt(r.capital)}</td>
         <td class="num">${fmt(r.interes1)}</td>
@@ -100,6 +145,7 @@ function renderLedger() {
         <thead>
           <tr>
             <th class="center">N°</th>
+            <th class="center">N° Contrato</th>
             <th>Fecha factura 1</th>
             <th class="num">Monto</th>
             <th class="num">Interés 1</th>
@@ -116,6 +162,7 @@ function renderLedger() {
         <tfoot>
           <tr>
             <td class="center">Σ</td>
+            <td class="center"></td>
             <td>Totales</td>
             <td class="num">${fmt(totalMonto)}</td>
             <td class="num">${fmt(totalInt1)}</td>
