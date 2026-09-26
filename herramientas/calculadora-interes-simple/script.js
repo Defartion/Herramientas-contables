@@ -60,6 +60,15 @@ function leerLedger() {
         r.numeroContrato = contador;
         huboMigracion = true;
       }
+      // Migración: los registros antiguos no tienen interesDiario.
+      // Se reconstruye como interés total / plazo (24 días si el
+      // registro no guarda el plazo), sin tocar el resto de sus datos.
+      if (typeof r.interesDiario !== 'number') {
+        const interesTotal = r.interes1 + (r.interes2 || 0);
+        const plazo = (typeof r.plazoDias === 'number' && r.plazoDias > 0) ? r.plazoDias : 24;
+        r.interesDiario = interesTotal / plazo;
+        huboMigracion = true;
+      }
     });
     if (huboMigracion) {
       guardarContador(contador);
@@ -128,6 +137,7 @@ function renderLedger() {
         <td class="col-nro">${r.numeroContrato}</td>
         <td>${r.fechaFactura1}</td>
         <td class="num">${fmt(r.capital)}</td>
+        <td class="num">${fmt(r.interesDiario)}</td>
         <td class="num">${fmt(r.interes1)}</td>
         <td class="num">${fmt(r.impuesto1)}</td>
         <td>${r.fechaFactura2 || '-'}</td>
@@ -148,6 +158,7 @@ function renderLedger() {
             <th class="center" title="Número de contrato (correlativo permanente)">N° Contrato</th>
             <th title="Fecha factura 1">Fecha F1</th>
             <th class="num" title="Monto prestado">Monto</th>
+            <th class="num" title="Interés diario (monto × tasa diaria)">Int. diario</th>
             <th class="num" title="Interés 1">Int. 1</th>
             <th class="num" title="Impuesto 1">Imp. 1</th>
             <th title="Fecha factura 2">Fecha F2</th>
@@ -165,6 +176,7 @@ function renderLedger() {
             <td class="center"></td>
             <td>Totales</td>
             <td class="num">${fmt(totalMonto)}</td>
+            <td></td>
             <td class="num">${fmt(totalInt1)}</td>
             <td class="num">${fmt(totalImp1)}</td>
             <td></td>
@@ -199,8 +211,9 @@ function exportarExcel() {
   const red = n => Math.round(n * 100) / 100;
 
   const encabezado = [
-    'N°', 'N° Contrato', 'Fecha factura 1', 'Monto', 'Interés 1', 'Impuesto 1',
-    'Fecha factura 2', 'Interés 2', 'Impuesto 2', 'Interés total', 'Impuesto total'
+    'N°', 'N° Contrato', 'Fecha factura 1', 'Monto', 'Interés diario',
+    'Interés 1', 'Impuesto 1', 'Fecha factura 2', 'Interés 2', 'Impuesto 2',
+    'Interés total', 'Impuesto total'
   ];
 
   let totalMonto = 0, totalInt1 = 0, totalImp1 = 0, totalInt2 = 0, totalImp2 = 0, totalIntGen = 0, totalImpGen = 0;
@@ -219,6 +232,7 @@ function exportarExcel() {
       r.numeroContrato,
       r.fechaFactura1,
       red(r.capital),
+      red(r.interesDiario),
       red(r.interes1),
       red(r.impuesto1),
       r.fechaFactura2 || '-',
@@ -231,15 +245,15 @@ function exportarExcel() {
 
   const filaTotales = [
     'Σ', '', 'Totales',
-    red(totalMonto), red(totalInt1), red(totalImp1),
+    red(totalMonto), '', red(totalInt1), red(totalImp1),
     '', red(totalInt2), red(totalImp2),
     red(totalIntGen), red(totalImpGen)
   ];
 
   const ws = XLSX.utils.aoa_to_sheet([encabezado, ...filas, filaTotales]);
   ws['!cols'] = [
-    { wch: 5 }, { wch: 12 }, { wch: 16 }, { wch: 12 }, { wch: 11 }, { wch: 11 },
-    { wch: 16 }, { wch: 11 }, { wch: 11 }, { wch: 13 }, { wch: 13 }
+    { wch: 5 }, { wch: 12 }, { wch: 16 }, { wch: 12 }, { wch: 13 }, { wch: 11 },
+    { wch: 11 }, { wch: 16 }, { wch: 11 }, { wch: 11 }, { wch: 13 }, { wch: 13 }
   ];
 
   const wb = XLSX.utils.book_new();
@@ -311,20 +325,6 @@ function calcular() {
     tbody.appendChild(tr);
   });
 
-  // --- Desglose diario (solo visual, no se guarda en el tablero) ---
-  const tbodyDiario = document.getElementById('tablaDiaria');
-  tbodyDiario.innerHTML = '';
-  const interesDia = capital * tasaDiaria;
-  let acumulado = 0;
-  const fechaDia = new Date(fechaInicioObj);
-  for (let i = 1; i <= plazoDias; i++) {
-    acumulado += interesDia;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i}</td><td>${fechaCorta(fechaDia)}</td><td>${fmt(interesDia)}</td><td>${fmt(acumulado)}</td>`;
-    tbodyDiario.appendChild(tr);
-    fechaDia.setDate(fechaDia.getDate() + 1);
-  }
-
   const notaEl = document.getElementById('cruceNota');
   if (grupos.length > 1) {
     notaEl.classList.remove('hidden');
@@ -375,6 +375,7 @@ function calcular() {
     fechaInicioISO: fechaInicioStr,
     fechaFactura1: fechaFactura1,
     capital: capital,
+    interesDiario: capital * tasaDiaria,
     interes1: interes1,
     impuesto1: impuesto1,
     fechaFactura2: fechaFactura2,
