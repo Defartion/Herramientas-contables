@@ -128,6 +128,7 @@ function vaciarLedger() {
 function construirDiasPago(r) {
   const dias = [];
   const plazo = (r.diasTramo1 || 0) + (r.diasTramo2 || 0) || 24;
+  const capitalDia = r.capital / plazo;
   const [y, m, d] = r.fechaInicioISO.split('-').map(Number);
   const fecha = new Date(y, m - 1, d);
   for (let i = 1; i <= plazo; i++) {
@@ -135,6 +136,8 @@ function construirDiasPago(r) {
       numeroContrato: r.numeroContrato + (i - 1),
       n: i,
       fecha: fechaCorta(fecha),
+      sinInteres: capitalDia,
+      conInteres: capitalDia + r.interesDiario,
       interes: r.interesDiario,
       acumulado: r.interesDiario * i
     });
@@ -161,10 +164,10 @@ function toggleDiasPago(id, btn) {
       <div class="dias-scroll">
         <table class="dias-table">
           <thead>
-            <tr><th>N° Contrato</th><th>Día</th><th>Fecha</th><th class="num">Interés del día</th><th class="num">Interés acumulado</th></tr>
+            <tr><th>N° Contrato</th><th>Día</th><th>Fecha</th><th class="num">Sin interés</th><th class="num">Con interés</th><th class="num">Interés del día</th><th class="num">Interés acumulado</th></tr>
           </thead>
           <tbody>
-            ${dias.map(d => `<tr><td class="col-nro">${d.numeroContrato}</td><td>${d.n}</td><td>${d.fecha}</td><td>${fmt(d.interes)}</td><td>${fmt(d.acumulado)}</td></tr>`).join('')}
+            ${dias.map(d => `<tr><td class="col-nro">${d.numeroContrato}</td><td>${d.n}</td><td>${d.fecha}</td><td class="num">${fmt(d.sinInteres)}</td><td class="num">${fmt(d.conInteres)}</td><td class="num">${fmt(d.interes)}</td><td class="num">${fmt(d.acumulado)}</td></tr>`).join('')}
           </tbody>
         </table>
       </div>
@@ -335,15 +338,15 @@ function exportarExcel() {
   ];
 
   // Hoja 2: detalle de los días de pago de todos los contratos.
-  const encabezadoDias = ['N° Contrato', 'Día', 'Fecha', 'Interés del día', 'Interés acumulado'];
+  const encabezadoDias = ['N° Contrato', 'Día', 'Fecha', 'Sin interés', 'Con interés', 'Interés del día', 'Interés acumulado'];
   const filasDias = [];
   lista.forEach(r => {
     construirDiasPago(r).forEach(d => {
-      filasDias.push([d.numeroContrato, d.n, d.fecha, red(d.interes), red(d.acumulado)]);
+      filasDias.push([d.numeroContrato, d.n, d.fecha, red(d.sinInteres), red(d.conInteres), red(d.interes), red(d.acumulado)]);
     });
   });
   const wsDias = XLSX.utils.aoa_to_sheet([encabezadoDias, ...filasDias]);
-  wsDias['!cols'] = [{ wch: 12 }, { wch: 6 }, { wch: 14 }, { wch: 15 }, { wch: 17 }];
+  wsDias['!cols'] = [{ wch: 12 }, { wch: 6 }, { wch: 14 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 17 }];
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Tablero');
