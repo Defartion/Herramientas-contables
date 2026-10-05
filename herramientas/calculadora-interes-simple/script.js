@@ -196,7 +196,6 @@ function renderLedger() {
 
     return `
       <tr>
-        <td class="center"><button class="ledger-toggle" onclick="toggleDiasPago(${r.id}, this)" aria-label="Ver días de pago" title="Ver días de pago"><i class="fas fa-chevron-right"></i></button></td>
         <td class="col-nro">${idx + 1}</td>
         <td class="col-nro">${r.numeroContrato}</td>
         <td class="col-nro">${r.diasTramo1}</td>
@@ -211,6 +210,7 @@ function renderLedger() {
         <td class="num">${r.impuesto2 != null ? fmt(r.impuesto2) : '-'}</td>
         <td class="num">${fmt(r.interes1 + (r.interes2 || 0))}</td>
         <td class="num">${fmt(r.impuesto1 + (r.impuesto2 || 0))}</td>
+        <td class="center"><button class="ledger-toggle" onclick="toggleDiasPago(${r.id}, this)" aria-label="Ver días de pago" title="Ver días de pago"><i class="fas fa-chevron-right"></i> Ver</button></td>
         <td class="center"><button class="ledger-delete" onclick="eliminarDelLedger(${r.id})" aria-label="Eliminar registro"><i class="fas fa-trash"></i></button></td>
       </tr>`;
   }).join('');
@@ -220,7 +220,6 @@ function renderLedger() {
       <table class="ledger-table">
         <thead>
           <tr>
-            <th class="center" title="Ver días de pago">Ver</th>
             <th class="center" title="Número de fila en la tabla">N°</th>
             <th class="center" title="Número de contrato (correlativo permanente)">N° Contrato</th>
             <th class="center" title="Días de interés del primer mes">Días M1</th>
@@ -235,13 +234,13 @@ function renderLedger() {
             <th class="num" title="Impuesto 2">Imp. 2</th>
             <th class="num" title="Interés total">Int. total</th>
             <th class="num" title="Impuesto total">Imp. total</th>
+            <th class="center" title="Ver los días de pago de este contrato">Ver</th>
             <th class="center" title="Quitar registro">Quitar</th>
           </tr>
         </thead>
         <tbody>${filas}</tbody>
         <tfoot>
           <tr>
-            <td class="center"></td>
             <td class="center">Σ</td>
             <td class="center"></td>
             <td class="center"></td>
@@ -256,6 +255,7 @@ function renderLedger() {
             <td class="num">${fmt(totalImp2)}</td>
             <td class="num">${fmt(totalIntGen)}</td>
             <td class="num">${fmt(totalImpGen)}</td>
+            <td class="center"></td>
             <td></td>
           </tr>
         </tfoot>

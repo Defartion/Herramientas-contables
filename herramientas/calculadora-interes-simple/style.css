@@ -147,7 +147,13 @@ tr:last-child td { border-bottom: none; }
 }
 .ledger-table .col-nro { text-align: center; color: var(--text-muted); }
 .ledger-delete { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; padding: 4px; }
-.ledger-toggle { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 0.8rem; padding: 2px 4px; }
+.ledger-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 4px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+}
+.ledger-toggle:active { opacity: 0.8; }
 
 /* Fila expandible con los días de pago de un contrato */
 .ledger-table .dias-row td { background: var(--bg); padding: 10px; }
