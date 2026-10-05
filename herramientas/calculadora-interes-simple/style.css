@@ -86,6 +86,7 @@ header p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
 .field { margin-bottom: 14px; }
 .field:last-child { margin-bottom: 0; }
 label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-muted); }
+.label-hint { font-size: 0.75rem; opacity: 0.85; }
 input {
   width: 100%; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--border);
   background: var(--bg); color: var(--text); font-size: 1rem; -webkit-appearance: none;
@@ -126,14 +127,14 @@ tr:last-child td { border-bottom: none; }
 
 /* Tablero acumulado */
 /* La tarjeta del tablero puede ser más ancha que el resto de la página
-   (centrada respecto al viewport) para que las 13 columnas quepan sin
+   (centrada respecto al viewport) para que las 15 columnas quepan sin
    scroll horizontal en pantallas de escritorio. En pantallas angostas
    sigue habiendo scroll horizontal dentro de .table-wrap. */
 #tablero {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  width: min(1160px, 100vw - 32px);
+  width: min(1240px, 100vw - 32px);
 }
 .ledger-table { font-size: 0.8rem; }
 .ledger-table th, .ledger-table td { padding: 6px 5px; }

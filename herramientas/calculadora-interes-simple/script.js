@@ -69,6 +69,18 @@ function leerLedger() {
         r.interesDiario = interesTotal / plazo;
         huboMigracion = true;
       }
+      // Migración: los registros antiguos no tienen los días de cada tramo.
+      // Se reconstruyen como interes1 / interesDiario (y interes2 / interesDiario),
+      // que por interés simple es exactamente el número de días de cada tramo.
+      if (typeof r.diasTramo1 !== 'number') {
+        r.diasTramo1 = r.interesDiario > 0 ? Math.round(r.interes1 / r.interesDiario) : 24;
+        huboMigracion = true;
+      }
+      if (typeof r.diasTramo2 !== 'number') {
+        r.diasTramo2 = (r.interes2 != null && r.interesDiario > 0)
+          ? Math.round(r.interes2 / r.interesDiario) : 0;
+        huboMigracion = true;
+      }
     });
     if (huboMigracion) {
       guardarContador(contador);
@@ -135,11 +147,13 @@ function renderLedger() {
       <tr>
         <td class="col-nro">${idx + 1}</td>
         <td class="col-nro">${r.numeroContrato}</td>
+        <td class="col-nro">${r.diasTramo1}</td>
         <td>${r.fechaFactura1}</td>
         <td class="num">${fmt(r.capital)}</td>
         <td class="num">${fmt(r.interesDiario)}</td>
         <td class="num">${fmt(r.interes1)}</td>
         <td class="num">${fmt(r.impuesto1)}</td>
+        <td class="col-nro">${r.diasTramo2 || '-'}</td>
         <td>${r.fechaFactura2 || '-'}</td>
         <td class="num">${r.interes2 != null ? fmt(r.interes2) : '-'}</td>
         <td class="num">${r.impuesto2 != null ? fmt(r.impuesto2) : '-'}</td>
@@ -156,11 +170,13 @@ function renderLedger() {
           <tr>
             <th class="center" title="Número de fila en la tabla">N°</th>
             <th class="center" title="Número de contrato (correlativo permanente)">N° Contrato</th>
+            <th class="center" title="Días de interés del primer mes">Días M1</th>
             <th title="Fecha factura 1">Fecha F1</th>
             <th class="num" title="Monto prestado">Monto</th>
             <th class="num" title="Interés diario (monto × tasa diaria)">Int. diario</th>
             <th class="num" title="Interés 1">Int. 1</th>
             <th class="num" title="Impuesto 1">Imp. 1</th>
+            <th class="center" title="Días de interés del segundo tramo">Días M2</th>
             <th title="Fecha factura 2">Fecha F2</th>
             <th class="num" title="Interés 2">Int. 2</th>
             <th class="num" title="Impuesto 2">Imp. 2</th>
@@ -174,11 +190,13 @@ function renderLedger() {
           <tr>
             <td class="center">Σ</td>
             <td class="center"></td>
+            <td class="center"></td>
             <td>Totales</td>
             <td class="num">${fmt(totalMonto)}</td>
             <td></td>
             <td class="num">${fmt(totalInt1)}</td>
             <td class="num">${fmt(totalImp1)}</td>
+            <td class="center"></td>
             <td></td>
             <td class="num">${fmt(totalInt2)}</td>
             <td class="num">${fmt(totalImp2)}</td>
@@ -211,8 +229,8 @@ function exportarExcel() {
   const red = n => Math.round(n * 100) / 100;
 
   const encabezado = [
-    'N°', 'N° Contrato', 'Fecha factura 1', 'Monto', 'Interés diario',
-    'Interés 1', 'Impuesto 1', 'Fecha factura 2', 'Interés 2', 'Impuesto 2',
+    'N°', 'N° Contrato', 'Días mes 1', 'Fecha factura 1', 'Monto', 'Interés diario',
+    'Interés 1', 'Impuesto 1', 'Días mes 2', 'Fecha factura 2', 'Interés 2', 'Impuesto 2',
     'Interés total', 'Impuesto total'
   ];
 
@@ -230,11 +248,13 @@ function exportarExcel() {
     return [
       idx + 1,
       r.numeroContrato,
+      r.diasTramo1,
       r.fechaFactura1,
       red(r.capital),
       red(r.interesDiario),
       red(r.interes1),
       red(r.impuesto1),
+      r.diasTramo2 || '',
       r.fechaFactura2 || '-',
       r.interes2 != null ? red(r.interes2) : '-',
       r.impuesto2 != null ? red(r.impuesto2) : '-',
@@ -244,16 +264,17 @@ function exportarExcel() {
   });
 
   const filaTotales = [
-    'Σ', '', 'Totales',
+    'Σ', '', '', 'Totales',
     red(totalMonto), '', red(totalInt1), red(totalImp1),
-    '', red(totalInt2), red(totalImp2),
+    '', '', red(totalInt2), red(totalImp2),
     red(totalIntGen), red(totalImpGen)
   ];
 
   const ws = XLSX.utils.aoa_to_sheet([encabezado, ...filas, filaTotales]);
   ws['!cols'] = [
-    { wch: 5 }, { wch: 12 }, { wch: 16 }, { wch: 12 }, { wch: 13 }, { wch: 11 },
-    { wch: 11 }, { wch: 16 }, { wch: 11 }, { wch: 11 }, { wch: 13 }, { wch: 13 }
+    { wch: 5 }, { wch: 12 }, { wch: 9 }, { wch: 16 }, { wch: 12 }, { wch: 13 },
+    { wch: 11 }, { wch: 11 }, { wch: 9 }, { wch: 16 }, { wch: 11 }, { wch: 11 },
+    { wch: 13 }, { wch: 13 }
   ];
 
   const wb = XLSX.utils.book_new();
@@ -271,10 +292,31 @@ function calcular() {
   const tasaInput = document.getElementById('tasa').value;
   const plazoInput = document.getElementById('plazo').value;
   const impuestoInput = document.getElementById('impuesto').value;
+  const contratoInput = document.getElementById('numeroContrato').value.trim();
 
   if (!capitalInput || !fechaInicioStr || !tasaInput || !plazoInput || !impuestoInput) {
     alert('Por favor completa todos los campos.');
     return;
+  }
+
+  // --- N° de contrato: lo pone el usuario; si lo deja vacío, sigue el correlativo ---
+  let numeroContrato;
+  if (contratoInput === '') {
+    numeroContrato = siguienteNumeroContrato();
+  } else {
+    numeroContrato = parseInt(contratoInput, 10);
+    if (!Number.isFinite(numeroContrato) || numeroContrato <= 0) {
+      alert('El N° de contrato debe ser un número entero mayor a cero.');
+      return;
+    }
+    if (leerLedger().some(r => r.numeroContrato === numeroContrato)) {
+      alert('El N° de contrato ' + numeroContrato + ' ya está en el tablero. Usa otro número.');
+      return;
+    }
+    // Si el número elegido adelanta el correlativo, la siguiente sugerencia parte de él.
+    if (numeroContrato > leerContador()) {
+      guardarContador(numeroContrato);
+    }
   }
 
   const capital = parseFloat(capitalInput);
@@ -360,9 +402,9 @@ function calcular() {
   f1.setDate(f1.getDate() + tramo1.dias - 1);
   const fechaFactura1 = fechaCorta(f1);
 
-  let fechaFactura2 = null, interes2 = null, impuesto2 = null;
+  let fechaFactura2 = null, interes2 = null, impuesto2 = null, diasTramo2 = 0;
   if (grupos.length > 1) {
-    const diasTramo2 = grupos.slice(1).reduce((acc, g) => acc + g.dias, 0);
+    diasTramo2 = grupos.slice(1).reduce((acc, g) => acc + g.dias, 0);
     interes2 = capital * tasaDiaria * diasTramo2;
     impuesto2 = interes2 * impuestoPct;
     // Factura 2: se cobra el último día con interés de todo el préstamo.
@@ -371,18 +413,23 @@ function calcular() {
 
   agregarAlLedger({
     id: Date.now() + Math.floor(Math.random() * 1000),
-    numeroContrato: siguienteNumeroContrato(),
+    numeroContrato: numeroContrato,
     fechaInicioISO: fechaInicioStr,
     fechaFactura1: fechaFactura1,
     capital: capital,
     interesDiario: capital * tasaDiaria,
     interes1: interes1,
     impuesto1: impuesto1,
+    diasTramo1: tramo1.dias,
+    diasTramo2: diasTramo2,
     fechaFactura2: fechaFactura2,
     interes2: interes2,
     impuesto2: impuesto2
   });
   renderLedger();
+
+  // Sugerir el siguiente correlativo para el próximo préstamo.
+  document.getElementById('numeroContrato').value = leerContador() + 1;
 }
 
 // ---------- Inicialización ----------
@@ -390,6 +437,11 @@ function calcular() {
   const today = new Date();
   const iso = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
   document.getElementById('fechaInicio').value = iso;
+  // Sugerir el siguiente N° de contrato correlativo (editable por el usuario).
+  // leerLedger() corre primero para migrar registros antiguos y así
+  // asegurar que la sugerencia no choque con un número ya usado.
+  leerLedger();
+  document.getElementById('numeroContrato').value = leerContador() + 1;
 })();
 
 renderLedger();
