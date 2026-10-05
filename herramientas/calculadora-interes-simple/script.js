@@ -119,6 +119,57 @@ function vaciarLedger() {
   renderLedger();
 }
 
+// ---------- Días de pago por contrato ----------
+// Reconstruye la lista de días de pago de un registro a partir de los
+// datos ya guardados (fechaInicioISO, diasTramo1 + diasTramo2 e
+// interesDiario), así no hace falta guardar los 24 días en localStorage.
+function construirDiasPago(r) {
+  const dias = [];
+  const plazo = (r.diasTramo1 || 0) + (r.diasTramo2 || 0) || 24;
+  const [y, m, d] = r.fechaInicioISO.split('-').map(Number);
+  const fecha = new Date(y, m - 1, d);
+  for (let i = 1; i <= plazo; i++) {
+    dias.push({
+      n: i,
+      fecha: fechaCorta(fecha),
+      interes: r.interesDiario,
+      acumulado: r.interesDiario * i
+    });
+    fecha.setDate(fecha.getDate() + 1);
+  }
+  return dias;
+}
+
+function toggleDiasPago(id, btn) {
+  const existente = document.getElementById('dias-' + id);
+  if (existente) {
+    existente.remove();
+    btn.querySelector('i').className = 'fas fa-chevron-right';
+    return;
+  }
+  const r = leerLedger().find(x => x.id === id);
+  if (!r) return;
+  const dias = construirDiasPago(r);
+  const tr = document.createElement('tr');
+  tr.id = 'dias-' + id;
+  tr.className = 'dias-row';
+  tr.innerHTML = `
+    <td colspan="16">
+      <div class="dias-scroll">
+        <table class="dias-table">
+          <thead>
+            <tr><th>Día</th><th>Fecha</th><th class="num">Interés del día</th><th class="num">Interés acumulado</th></tr>
+          </thead>
+          <tbody>
+            ${dias.map(d => `<tr><td>${d.n}</td><td>${d.fecha}</td><td>${fmt(d.interes)}</td><td>${fmt(d.acumulado)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </td>`;
+  btn.closest('tr').after(tr);
+  btn.querySelector('i').className = 'fas fa-chevron-down';
+}
+
 function renderLedger() {
   const lista = leerLedger().slice().sort((a, b) => a.fechaInicioISO.localeCompare(b.fechaInicioISO));
   const cont = document.getElementById('ledgerContenedor');
@@ -145,6 +196,7 @@ function renderLedger() {
 
     return `
       <tr>
+        <td class="center"><button class="ledger-toggle" onclick="toggleDiasPago(${r.id}, this)" aria-label="Ver días de pago" title="Ver días de pago"><i class="fas fa-chevron-right"></i></button></td>
         <td class="col-nro">${idx + 1}</td>
         <td class="col-nro">${r.numeroContrato}</td>
         <td class="col-nro">${r.diasTramo1}</td>
@@ -168,6 +220,7 @@ function renderLedger() {
       <table class="ledger-table">
         <thead>
           <tr>
+            <th class="center" title="Ver días de pago">Ver</th>
             <th class="center" title="Número de fila en la tabla">N°</th>
             <th class="center" title="Número de contrato (correlativo permanente)">N° Contrato</th>
             <th class="center" title="Días de interés del primer mes">Días M1</th>
@@ -188,6 +241,7 @@ function renderLedger() {
         <tbody>${filas}</tbody>
         <tfoot>
           <tr>
+            <td class="center"></td>
             <td class="center">Σ</td>
             <td class="center"></td>
             <td class="center"></td>
@@ -277,8 +331,20 @@ function exportarExcel() {
     { wch: 13 }, { wch: 13 }
   ];
 
+  // Hoja 2: detalle de los días de pago de todos los contratos.
+  const encabezadoDias = ['N° Contrato', 'Día', 'Fecha', 'Interés del día', 'Interés acumulado'];
+  const filasDias = [];
+  lista.forEach(r => {
+    construirDiasPago(r).forEach(d => {
+      filasDias.push([r.numeroContrato, d.n, d.fecha, red(d.interes), red(d.acumulado)]);
+    });
+  });
+  const wsDias = XLSX.utils.aoa_to_sheet([encabezadoDias, ...filasDias]);
+  wsDias['!cols'] = [{ wch: 12 }, { wch: 6 }, { wch: 14 }, { wch: 15 }, { wch: 17 }];
+
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Tablero');
+  XLSX.utils.book_append_sheet(wb, wsDias, 'Días de pago');
 
   const hoy = new Date();
   const iso = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');

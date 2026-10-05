@@ -127,7 +127,7 @@ tr:last-child td { border-bottom: none; }
 
 /* Tablero acumulado */
 /* La tarjeta del tablero puede ser más ancha que el resto de la página
-   (centrada respecto al viewport) para que las 15 columnas quepan sin
+   (centrada respecto al viewport) para que las 16 columnas quepan sin
    scroll horizontal en pantallas de escritorio. En pantallas angostas
    sigue habiendo scroll horizontal dentro de .table-wrap. */
 #tablero {
@@ -147,6 +147,12 @@ tr:last-child td { border-bottom: none; }
 }
 .ledger-table .col-nro { text-align: center; color: var(--text-muted); }
 .ledger-delete { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; padding: 4px; }
+.ledger-toggle { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 0.8rem; padding: 2px 4px; }
+
+/* Fila expandible con los días de pago de un contrato */
+.ledger-table .dias-row td { background: var(--bg); padding: 10px; }
+.dias-scroll { max-height: 280px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+.dias-table { font-size: 0.8rem; }
 .empty-state { text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.9rem; }
 .empty-state i { font-size: 1.8rem; display: block; margin-bottom: 10px; opacity: 0.6; }
 .clear-all-btn {
