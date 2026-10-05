@@ -123,6 +123,8 @@ function vaciarLedger() {
 // Reconstruye la lista de días de pago de un registro a partir de los
 // datos ya guardados (fechaInicioISO, diasTramo1 + diasTramo2 e
 // interesDiario), así no hace falta guardar los 24 días en localStorage.
+// Cada día consume un N° de contrato correlativo: si el préstamo empieza
+// con el 257, sus días van del 257 al 257 + plazo - 1.
 function construirDiasPago(r) {
   const dias = [];
   const plazo = (r.diasTramo1 || 0) + (r.diasTramo2 || 0) || 24;
@@ -130,6 +132,7 @@ function construirDiasPago(r) {
   const fecha = new Date(y, m - 1, d);
   for (let i = 1; i <= plazo; i++) {
     dias.push({
+      numeroContrato: r.numeroContrato + (i - 1),
       n: i,
       fecha: fechaCorta(fecha),
       interes: r.interesDiario,
@@ -158,10 +161,10 @@ function toggleDiasPago(id, btn) {
       <div class="dias-scroll">
         <table class="dias-table">
           <thead>
-            <tr><th>Día</th><th>Fecha</th><th class="num">Interés del día</th><th class="num">Interés acumulado</th></tr>
+            <tr><th>N° Contrato</th><th>Día</th><th>Fecha</th><th class="num">Interés del día</th><th class="num">Interés acumulado</th></tr>
           </thead>
           <tbody>
-            ${dias.map(d => `<tr><td>${d.n}</td><td>${d.fecha}</td><td>${fmt(d.interes)}</td><td>${fmt(d.acumulado)}</td></tr>`).join('')}
+            ${dias.map(d => `<tr><td class="col-nro">${d.numeroContrato}</td><td>${d.n}</td><td>${d.fecha}</td><td>${fmt(d.interes)}</td><td>${fmt(d.acumulado)}</td></tr>`).join('')}
           </tbody>
         </table>
       </div>
@@ -336,7 +339,7 @@ function exportarExcel() {
   const filasDias = [];
   lista.forEach(r => {
     construirDiasPago(r).forEach(d => {
-      filasDias.push([r.numeroContrato, d.n, d.fecha, red(d.interes), red(d.acumulado)]);
+      filasDias.push([d.numeroContrato, d.n, d.fecha, red(d.interes), red(d.acumulado)]);
     });
   });
   const wsDias = XLSX.utils.aoa_to_sheet([encabezadoDias, ...filasDias]);
@@ -379,10 +382,6 @@ function calcular() {
       alert('El N° de contrato ' + numeroContrato + ' ya está en el tablero. Usa otro número.');
       return;
     }
-    // Si el número elegido adelanta el correlativo, la siguiente sugerencia parte de él.
-    if (numeroContrato > leerContador()) {
-      guardarContador(numeroContrato);
-    }
   }
 
   const capital = parseFloat(capitalInput);
@@ -393,6 +392,13 @@ function calcular() {
   if (capital <= 0 || plazoDias <= 0) {
     alert('Revisa que el monto y el plazo sean mayores a cero.');
     return;
+  }
+
+  // Los N° de contrato se consumen uno por día: un préstamo de N días que
+  // empieza en X usa los números X a X+N-1, y el correlativo continúa en X+N.
+  const ultimoNumeroUsado = numeroContrato + plazoDias - 1;
+  if (ultimoNumeroUsado > leerContador()) {
+    guardarContador(ultimoNumeroUsado);
   }
 
   const tasaDiaria = tasaTotal / plazoDias;
