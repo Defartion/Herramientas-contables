@@ -330,14 +330,8 @@ function exportarExcel() {
     red(totalIntGen), red(totalImpGen)
   ];
 
-  const ws = XLSX.utils.aoa_to_sheet([encabezado, ...filas, filaTotales]);
-  ws['!cols'] = [
-    { wch: 5 }, { wch: 12 }, { wch: 9 }, { wch: 16 }, { wch: 12 }, { wch: 13 },
-    { wch: 11 }, { wch: 11 }, { wch: 9 }, { wch: 16 }, { wch: 11 }, { wch: 11 },
-    { wch: 13 }, { wch: 13 }
-  ];
-
-  // Hoja 2: detalle de los días de pago de todos los contratos.
+  // Todo en una sola hoja: primero el resumen del tablero y, debajo,
+  // el detalle de los días de pago de cada contrato.
   const encabezadoDias = ['N° Contrato', 'Día', 'Fecha', 'Sin interés', 'Con interés', 'Interés del día', 'Interés acumulado'];
   const filasDias = [];
   lista.forEach(r => {
@@ -345,12 +339,27 @@ function exportarExcel() {
       filasDias.push([d.numeroContrato, d.n, d.fecha, red(d.sinInteres), red(d.conInteres), red(d.interes), red(d.acumulado)]);
     });
   });
-  const wsDias = XLSX.utils.aoa_to_sheet([encabezadoDias, ...filasDias]);
-  wsDias['!cols'] = [{ wch: 12 }, { wch: 6 }, { wch: 14 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 17 }];
+
+  const hoja = [
+    ['Tablero de datos acumulado'],
+    encabezado,
+    ...filas,
+    filaTotales,
+    [],
+    ['Días de pago por contrato'],
+    encabezadoDias,
+    ...filasDias
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(hoja);
+  // Anchos que funcionan para ambas secciones (comparten columnas).
+  ws['!cols'] = [
+    { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 12 }, { wch: 13 },
+    { wch: 15 }, { wch: 11 }, { wch: 11 }, { wch: 16 }, { wch: 11 }, { wch: 11 },
+    { wch: 13 }, { wch: 13 }
+  ];
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Tablero');
-  XLSX.utils.book_append_sheet(wb, wsDias, 'Días de pago');
 
   const hoy = new Date();
   const iso = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
