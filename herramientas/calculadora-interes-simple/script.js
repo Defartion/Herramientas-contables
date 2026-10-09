@@ -123,8 +123,7 @@ function vaciarLedger() {
 // Reconstruye la lista de días de pago de un registro a partir de los
 // datos ya guardados (fechaInicioISO, diasTramo1 + diasTramo2 e
 // interesDiario), así no hace falta guardar los 24 días en localStorage.
-// Cada día consume un N° de contrato correlativo: si el préstamo empieza
-// con el 257, sus días van del 257 al 257 + plazo - 1.
+// El N° de contrato es el mismo durante todos los días del préstamo.
 function construirDiasPago(r) {
   const dias = [];
   const plazo = (r.diasTramo1 || 0) + (r.diasTramo2 || 0) || 24;
@@ -133,7 +132,7 @@ function construirDiasPago(r) {
   const fecha = new Date(y, m - 1, d);
   for (let i = 1; i <= plazo; i++) {
     dias.push({
-      numeroContrato: r.numeroContrato + (i - 1),
+      numeroContrato: r.numeroContrato,
       n: i,
       fecha: fechaCorta(fecha),
       sinInteres: capitalDia,
@@ -406,11 +405,10 @@ function calcular() {
     return;
   }
 
-  // Los N° de contrato se consumen uno por día: un préstamo de N días que
-  // empieza en X usa los números X a X+N-1, y el correlativo continúa en X+N.
-  const ultimoNumeroUsado = numeroContrato + plazoDias - 1;
-  if (ultimoNumeroUsado > leerContador()) {
-    guardarContador(ultimoNumeroUsado);
+  // Si el número elegido adelanta el correlativo, la siguiente
+  // sugerencia parte de él (avanza de 1 en 1, no por días).
+  if (numeroContrato > leerContador()) {
+    guardarContador(numeroContrato);
   }
 
   const tasaDiaria = tasaTotal / plazoDias;
