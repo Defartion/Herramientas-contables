@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Proyección de ingresos y egresos mes a mes, con alerta de saldos negativos">
+<title>Flujo de caja</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../compartido/base.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1><i class="fas fa-money-bill-trend-up" aria-hidden="true"></i> Flujo de caja</h1>
+      <p>Proyección de ingresos y egresos mes a mes, con alerta de saldos negativos</p>
+    </div>
+  </header>
+
+  <div class="grid-calc">
+    <section class="card" aria-labelledby="t-datos">
+      <h2 id="t-datos"><i class="fas fa-pen-to-square" aria-hidden="true"></i> Configuración</h2>
+      <form id="form"></form>
+    </section>
+    <section class="card" aria-labelledby="t-resultado">
+      <h2 id="t-resultado"><i class="fas fa-chart-simple" aria-hidden="true"></i> Resumen</h2>
+      <div id="resultado" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <section class="card" id="detalle" aria-labelledby="t-detalle" hidden>
+    <div class="card-head">
+      <h2 id="t-detalle"><i class="fas fa-table-cells" aria-hidden="true"></i> Ingresos y egresos por mes</h2>
+      <div class="acciones"><button type="button" class="btn btn-excel" id="btnExcel"><i class="fas fa-file-excel" aria-hidden="true"></i> Exportar a Excel</button></div>
+    </div>
+    <div id="detalleContenido"></div>
+  </section>
+
+  <footer class="pie">Herramientas Contables · cálculo referencial, verifica con la norma vigente</footer>
+</div>
+<script src="../../compartido/util.js"></script>
+<script src="../../compartido/parametros.js"></script>
+<script src="../../compartido/base.js"></script>
+<script src="js/calculo.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -84,14 +84,17 @@ const SECCIONES = [
     titulo: 'Tesorería y activos',
     herramientas: [
       { id: 'tipo-cambio', nombre: 'Tipo de cambio', icono: 'fa-money-bill-transfer',
-        descripcion: 'Convierte entre soles y dólares con el tipo de cambio que indiques.' },
+        descripcion: 'Convierte entre soles y dólares con el tipo de cambio que indiques.',
+        ruta: 'herramientas/tipo-cambio/index.html' },
       { id: 'flujo-caja', nombre: 'Flujo de caja', icono: 'fa-money-bill-trend-up',
-        descripcion: 'Proyección de ingresos y egresos mes a mes.' },
+        descripcion: 'Proyección de ingresos y egresos mes a mes.',
+        ruta: 'herramientas/flujo-caja/index.html' },
       { id: 'conciliacion-bancaria', nombre: 'Conciliación bancaria', icono: 'fa-building-columns',
         descripcion: 'Compara el extracto del banco con tus registros.',
         pendiente: 'Para construirla se necesita un extracto bancario y el libro bancos de ejemplo, tal como los exporta el banco y el sistema contable.' },
       { id: 'depreciacion', nombre: 'Depreciación de activos', icono: 'fa-boxes-stacked',
-        descripcion: 'Depreciación de activos fijos por línea recta.' }
+        descripcion: 'Depreciación de activos fijos por línea recta.',
+        ruta: 'herramientas/depreciacion/index.html' }
     ]
   }
 ];

@@ -250,7 +250,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .tabla-editable td { padding: 4px; }
 .tabla-editable input, .tabla-editable select { min-height: 36px; padding: 6px 8px; font-size: 0.86rem; border-radius: 8px; }
 .tabla-editable input[type="number"] { text-align: right; min-width: 96px; }
-.tabla-editable .col-concepto { min-width: 170px; }
+.tabla-editable .col-concepto { min-width: 230px; }
 .tabla-editable .fija { position: sticky; left: 0; background: var(--card-bg); z-index: 1; }
 
 /* ---------- Avisos ---------- */
