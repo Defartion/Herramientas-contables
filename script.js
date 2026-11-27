@@ -58,9 +58,11 @@ const SECCIONES = [
         descripcion: 'Sube el Excel con los saldos contables y arma el balance automáticamente.',
         pendiente: 'Para construirla se necesita un Excel de ejemplo del balance de comprobación (con datos ficticios o tapados), para conocer sus columnas y el plan de cuentas.' },
       { id: 'estado-resultados', nombre: 'Estado de resultados', icono: 'fa-chart-column',
-        descripcion: 'Ingresos, costos y gastos del periodo con su utilidad.' },
+        descripcion: 'Ingresos, costos y gastos del periodo con su utilidad.',
+        ruta: 'herramientas/estado-resultados/index.html' },
       { id: 'ratios', nombre: 'Ratios financieros', icono: 'fa-gauge-high',
-        descripcion: 'Liquidez, endeudamiento y rentabilidad a partir del balance.' }
+        descripcion: 'Liquidez, endeudamiento y rentabilidad a partir del balance.',
+        ruta: 'herramientas/ratios/index.html' }
     ]
   },
   {
