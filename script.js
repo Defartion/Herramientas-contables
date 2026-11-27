@@ -41,11 +41,14 @@ const SECCIONES = [
     titulo: 'Impuestos',
     herramientas: [
       { id: 'igv', nombre: 'Calculadora de IGV', icono: 'fa-receipt',
-        descripcion: 'Agrega o quita el IGV y separa base imponible e impuesto.' },
+        descripcion: 'Agrega o quita el IGV y separa base imponible e impuesto.',
+        ruta: 'herramientas/igv/index.html' },
       { id: 'detracciones', nombre: 'Detracciones y retenciones', icono: 'fa-hand-holding-dollar',
-        descripcion: 'Detracciones, retenciones y percepciones según la operación.' },
+        descripcion: 'Detracciones, retenciones y percepciones según la operación.',
+        ruta: 'herramientas/detracciones/index.html' },
       { id: 'renta-cuarta', nombre: 'Renta de 4.ª categoría', icono: 'fa-file-signature',
-        descripcion: 'Retención en recibos por honorarios.' }
+        descripcion: 'Retención en recibos por honorarios.',
+        ruta: 'herramientas/renta-cuarta/index.html' }
     ]
   },
   {

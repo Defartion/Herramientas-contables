@@ -138,7 +138,10 @@ input[type="number"] { -moz-appearance: textfield; }
 .con-sufijo input { padding-right: 34px; }
 .error { display: block; color: var(--danger); font-size: 0.78rem; margin-top: 5px; }
 .error:empty { display: none; }
-.fila-campos { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.fila-campos { display: grid; column-gap: 10px; row-gap: 14px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-bottom: 14px; }
+/* Alinea etiqueta, casilla y ayuda de los campos de una misma fila aunque la etiqueta ocupe dos líneas. */
+.fila-campos > .field { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; align-content: start; margin-bottom: 0; }
+.fila-campos > .field > label, .fila-campos > .field > .label { align-self: end; }
 .check { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: var(--text); margin: 0; min-height: 44px; }
 .check input { width: 20px; height: 20px; min-height: 0; padding: 0; margin: 0; border-radius: 5px; flex-shrink: 0; cursor: pointer; display: grid; place-content: center; }
 .check input:checked { background: var(--accent); border-color: var(--accent); }
@@ -201,6 +204,7 @@ input[type="number"] { -moz-appearance: textfield; }
   padding: 9px 0; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums;
 }
 .total-line .lbl { color: var(--text-muted); font-size: 0.88rem; }
+.total-line > span:last-child { white-space: nowrap; text-align: right; }
 .total-line .lbl small { display: block; font-size: 0.74rem; color: var(--text-faint); }
 .total-line.sub .lbl { padding-left: 14px; }
 .total-line.fuerte { font-weight: 700; }
