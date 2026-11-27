@@ -67,13 +67,17 @@ const SECCIONES = [
     titulo: 'Planilla y beneficios',
     herramientas: [
       { id: 'planilla', nombre: 'Sueldo neto', icono: 'fa-user-tie',
-        descripcion: 'Descuentos de AFP u ONP, renta de 5.ª y aporte a EsSalud.' },
+        descripcion: 'Descuentos de AFP u ONP, renta de 5.ª y aporte a EsSalud.',
+        ruta: 'herramientas/planilla/index.html' },
       { id: 'cts', nombre: 'CTS', icono: 'fa-piggy-bank',
-        descripcion: 'Depósito de CTS de mayo y noviembre.' },
+        descripcion: 'Depósito de CTS de mayo y noviembre.',
+        ruta: 'herramientas/cts/index.html' },
       { id: 'gratificaciones', nombre: 'Gratificaciones', icono: 'fa-gift',
-        descripcion: 'Gratificación de julio y diciembre con su bonificación.' },
+        descripcion: 'Gratificación de julio y diciembre con su bonificación.',
+        ruta: 'herramientas/gratificaciones/index.html' },
       { id: 'liquidacion', nombre: 'Liquidación de beneficios', icono: 'fa-file-contract',
-        descripcion: 'Beneficios sociales al terminar un vínculo laboral.' }
+        descripcion: 'Beneficios sociales al terminar un vínculo laboral.',
+        ruta: 'herramientas/liquidacion/index.html' }
     ]
   },
   {

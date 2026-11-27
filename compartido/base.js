@@ -29,6 +29,9 @@
     return (negativo ? '-' : '') + simbolo + ' ' + formato(2).format(Math.abs(n));
   };
   HC.pct = (n, dec = 2) => Number.isFinite(n) ? HC.numero(n, dec) + ' %' : '-';
+  /** Número sin ceros de relleno: 9 → "9", 6.75 → "6.75". */
+  HC.numeroCorto = (n, maxDec = 2) => Number.isFinite(n)
+    ? new Intl.NumberFormat('es-PE', { minimumFractionDigits: 0, maximumFractionDigits: maxDec }).format(n) : '-';
   HC.fecha = f => {
     const d = f instanceof Date ? f : U.desdeISO(f);
     return d ? U.corta(d) : '-';
