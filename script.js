@@ -24,13 +24,17 @@ const SECCIONES = [
         ruta: 'herramientas/calculadora-interes-simple/index.html'
       },
       { id: 'interes-compuesto', nombre: 'Interés compuesto', icono: 'fa-chart-line',
-        descripcion: 'Valor futuro de un capital con capitalización periódica.' },
+        descripcion: 'Valor futuro de un capital con capitalización periódica.',
+        ruta: 'herramientas/interes-compuesto/index.html' },
       { id: 'cronograma-cuotas', nombre: 'Cronograma de cuotas', icono: 'fa-calendar-check',
-        descripcion: 'Cuotas fijas (francés) o decrecientes (alemán) con su cronograma.' },
+        descripcion: 'Cuotas fijas (francés) o decrecientes (alemán) con su cronograma.',
+        ruta: 'herramientas/cronograma-cuotas/index.html' },
       { id: 'conversor-tasas', nombre: 'Conversor de tasas', icono: 'fa-percent',
-        descripcion: 'Convierte entre TEA, TEM, TNA y tasa diaria.' },
+        descripcion: 'Convierte entre TEA, TEM, TNA y tasa diaria.',
+        ruta: 'herramientas/conversor-tasas/index.html' },
       { id: 'interes-moratorio', nombre: 'Interés moratorio', icono: 'fa-hourglass-half',
-        descripcion: 'Interés y penalidad por días de atraso.' }
+        descripcion: 'Interés y penalidad por días de atraso.',
+        ruta: 'herramientas/interes-moratorio/index.html' }
     ]
   },
   {
@@ -48,7 +52,8 @@ const SECCIONES = [
     titulo: 'Estados financieros',
     herramientas: [
       { id: 'balance-excel', nombre: 'Balance desde Excel', icono: 'fa-scale-balanced',
-        descripcion: 'Sube el Excel con los saldos contables y arma el balance automáticamente.' },
+        descripcion: 'Sube el Excel con los saldos contables y arma el balance automáticamente.',
+        pendiente: 'Para construirla se necesita un Excel de ejemplo del balance de comprobación (con datos ficticios o tapados), para conocer sus columnas y el plan de cuentas.' },
       { id: 'estado-resultados', nombre: 'Estado de resultados', icono: 'fa-chart-column',
         descripcion: 'Ingresos, costos y gastos del periodo con su utilidad.' },
       { id: 'ratios', nombre: 'Ratios financieros', icono: 'fa-gauge-high',
@@ -76,7 +81,8 @@ const SECCIONES = [
       { id: 'flujo-caja', nombre: 'Flujo de caja', icono: 'fa-money-bill-trend-up',
         descripcion: 'Proyección de ingresos y egresos mes a mes.' },
       { id: 'conciliacion-bancaria', nombre: 'Conciliación bancaria', icono: 'fa-building-columns',
-        descripcion: 'Compara el extracto del banco con tus registros.' },
+        descripcion: 'Compara el extracto del banco con tus registros.',
+        pendiente: 'Para construirla se necesita un extracto bancario y el libro bancos de ejemplo, tal como los exporta el banco y el sistema contable.' },
       { id: 'depreciacion', nombre: 'Depreciación de activos', icono: 'fa-boxes-stacked',
         descripcion: 'Depreciación de activos fijos por línea recta.' }
     ]
@@ -176,7 +182,7 @@ function vistaPlanificada(h) {
         <h1>${esc(h.nombre)}</h1>
         <p>${esc(h.descripcion)}</p>
         <span class="estado">Próximamente</span>
-        <p class="nota">Esta herramienta está planificada y todavía no está disponible.</p>
+        <p class="nota">${h.pendiente ? esc(h.pendiente) : 'Esta herramienta está planificada y todavía no está disponible.'}</p>
         <a class="boton" href="#${INICIO}"><i class="fas fa-house" aria-hidden="true"></i> Ver todas las herramientas</a>
       </div>
     </div>`;
