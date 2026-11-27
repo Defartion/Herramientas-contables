@@ -3,111 +3,176 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Calcula el interés simple de préstamos por mes calendario y lleva un tablero de contratos.">
 <title>Calculadora de Interés Simple</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" defer></script>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <button class="history-btn" onclick="irAlTablero()" aria-label="Ir al tablero">
-      <i class="fas fa-table-list"></i> Tablero
-    </button>
-    <h1><i class="fas fa-calculator"></i> Calculadora de Interés Simple</h1>
-    <p>Préstamos con corte de interés por mes calendario</p>
+  <header class="top">
+    <div class="top-title">
+      <h1><i class="fas fa-calculator" aria-hidden="true"></i> Calculadora de Interés Simple</h1>
+      <p>Préstamos con corte de interés por mes calendario</p>
+    </div>
+    <a class="btn btn-ghost" href="#tablero">
+      <i class="fas fa-table-list" aria-hidden="true"></i> Tablero
+      <span class="badge" id="badgeRegistros">0</span>
+    </a>
   </header>
 
-  <div class="card">
-    <h2><i class="fas fa-file-invoice-dollar"></i> Datos del préstamo</h2>
-    <div class="field">
-      <label for="numeroContrato">N° de contrato <span class="label-hint">(se sugiere el correlativo, puedes cambiarlo)</span></label>
-      <input type="number" id="numeroContrato" inputmode="numeric">
-    </div>
-    <div class="field">
-      <label for="capital">Monto prestado</label>
-      <input type="number" id="capital" placeholder="Ej. 1000" inputmode="decimal">
-    </div>
-    <div class="field">
-      <label for="fechaInicio">Fecha de inicio del préstamo</label>
-      <input type="date" id="fechaInicio">
-    </div>
-    <div class="row2">
-      <div class="field">
-        <label for="tasa">Tasa total (%)</label>
-        <input type="number" id="tasa" value="10" inputmode="decimal">
+  <div id="aviso" class="banner" role="alert" hidden></div>
+
+  <div class="grid-calc">
+    <section class="card" aria-labelledby="t-datos">
+      <h2 id="t-datos"><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Datos del préstamo</h2>
+      <form id="formPrestamo" novalidate autocomplete="off">
+        <div class="field">
+          <label for="numeroContrato">N° de contrato <span class="label-hint">· se sugiere el correlativo, puedes cambiarlo</span></label>
+          <input type="number" id="numeroContrato" name="numeroContrato" inputmode="numeric" min="1" step="1" aria-describedby="err-numeroContrato">
+          <small class="error" id="err-numeroContrato"></small>
+        </div>
+        <div class="field">
+          <label for="capital">Monto prestado</label>
+          <div class="input-prefix">
+            <span aria-hidden="true">S/</span>
+            <input type="number" id="capital" name="capital" placeholder="Ej. 1000" inputmode="decimal" min="0" step="0.01" aria-describedby="err-capital">
+          </div>
+          <small class="error" id="err-capital"></small>
+        </div>
+        <div class="field">
+          <label for="fechaInicioISO">Fecha de inicio del préstamo</label>
+          <input type="date" id="fechaInicioISO" name="fechaInicioISO" aria-describedby="err-fechaInicioISO">
+          <small class="error" id="err-fechaInicioISO"></small>
+        </div>
+        <div class="row3">
+          <div class="field">
+            <label for="tasaPct">Tasa total (%)</label>
+            <input type="number" id="tasaPct" name="tasaPct" value="10" inputmode="decimal" min="0" step="0.01" aria-describedby="err-tasaPct">
+            <small class="error" id="err-tasaPct"></small>
+          </div>
+          <div class="field">
+            <label for="plazoDias">Plazo (días)</label>
+            <input type="number" id="plazoDias" name="plazoDias" value="24" inputmode="numeric" min="1" step="1" aria-describedby="err-plazoDias">
+            <small class="error" id="err-plazoDias"></small>
+          </div>
+          <div class="field">
+            <label for="impuestoPct">Impuesto (%)</label>
+            <input type="number" id="impuestoPct" name="impuestoPct" value="5" inputmode="decimal" min="0" max="100" step="0.01" aria-describedby="err-impuestoPct">
+            <small class="error" id="err-impuestoPct"></small>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="btnGuardar">
+          <i class="fas fa-floppy-disk" aria-hidden="true"></i> Guardar contrato en el tablero
+        </button>
+        <p class="hint"><i class="fas fa-circle-info" aria-hidden="true"></i> El resumen se actualiza mientras escribes. El contrato se guarda solo al presionar el botón.</p>
+      </form>
+    </section>
+
+    <section class="card" id="resultados" aria-labelledby="t-resumen">
+      <h2 id="t-resumen"><i class="fas fa-chart-line" aria-hidden="true"></i> Resumen del préstamo</h2>
+      <div id="resultadoVacio" class="empty-state">
+        <i class="fas fa-calculator" aria-hidden="true"></i>
+        Ingresa el monto para ver el cálculo.
       </div>
-      <div class="field">
-        <label for="plazo">Plazo (días)</label>
-        <input type="number" id="plazo" value="24" inputmode="numeric">
+      <div id="resultadoContenido" hidden>
+        <div class="stat-grid">
+          <div class="stat"><div class="label">Tasa diaria</div><div class="value" id="rTasaDiaria">-</div></div>
+          <div class="stat"><div class="label">Interés diario</div><div class="value" id="rInteresDiario">-</div></div>
+          <div class="stat"><div class="label">Último día con interés</div><div class="value" id="rUltimoDia">-</div></div>
+          <div class="stat stat-accent"><div class="label">Total a pagar</div><div class="value" id="rTotalPagar">-</div></div>
+        </div>
+
+        <h3>Facturas</h3>
+        <div class="table-wrap">
+          <table class="tabla">
+            <thead><tr><th scope="col">Factura</th><th scope="col">Fecha</th><th scope="col" class="num">Días</th><th scope="col" class="num">Interés</th><th scope="col" class="num">Impuesto</th></tr></thead>
+            <tbody id="rFacturas"></tbody>
+          </table>
+        </div>
+        <div id="rNotaCruce" class="note" hidden>
+          <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+          <span id="rNotaCruceTexto"></span>
+        </div>
+
+        <details class="desglose">
+          <summary>Desglose por mes calendario</summary>
+          <div class="table-wrap">
+            <table class="tabla">
+              <thead><tr><th scope="col">Mes</th><th scope="col">Del – al</th><th scope="col" class="num">Días</th><th scope="col" class="num">Interés</th></tr></thead>
+              <tbody id="rMeses"></tbody>
+            </table>
+          </div>
+        </details>
+
+        <div class="totales">
+          <div class="total-line"><span class="lbl">Interés total (<span id="rPlazo">24</span> días)</span><span id="rInteresTotal">-</span></div>
+          <div class="total-line"><span class="lbl">Impuesto (<span id="rImpPct">5</span> %)</span><span id="rImpuestoTotal">-</span></div>
+          <div class="total-line"><span class="lbl">Interés neto (después de impuesto)</span><span id="rInteresNeto">-</span></div>
+          <div class="total-line big"><span class="lbl">Total a pagar (capital + interés)</span><span id="rTotalPagar2">-</span></div>
+        </div>
       </div>
-    </div>
-    <div class="field">
-      <label for="impuesto">Impuesto sobre el interés (%)</label>
-      <input type="number" id="impuesto" value="5" inputmode="decimal">
-    </div>
-    <button class="calc" onclick="calcular()"><i class="fas fa-circle-check"></i> Calcular</button>
+    </section>
   </div>
 
-  <div id="resultados" class="hidden">
-    <div class="card">
-      <h2><i class="fas fa-chart-line"></i> Resumen</h2>
-      <div class="stat-grid">
-        <div class="stat">
-          <div class="label">Tasa diaria</div>
-          <div class="value" id="tasaDiaria">-</div>
+  <section id="tablero" class="card card-wide" aria-labelledby="t-tablero">
+    <div class="card-head">
+      <h2 id="t-tablero"><i class="fas fa-table-cells-large" aria-hidden="true"></i> Tablero de contratos</h2>
+      <div class="toolbar">
+        <div class="search">
+          <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+          <input type="search" id="buscar" placeholder="Buscar N° de contrato" aria-label="Buscar por número de contrato" inputmode="numeric">
         </div>
-        <div class="stat">
-          <div class="label">Último día con interés</div>
-          <div class="value" id="fechaFin">-</div>
+        <button type="button" class="btn btn-excel" data-accion="excel"><i class="fas fa-file-excel" aria-hidden="true"></i> Exportar a Excel</button>
+        <div class="menu">
+          <button type="button" class="btn" data-accion="menu-respaldo" aria-haspopup="true" aria-expanded="false" aria-controls="menuRespaldo">
+            <i class="fas fa-shield-halved" aria-hidden="true"></i> Respaldo <i class="fas fa-chevron-down fa-xs" aria-hidden="true"></i>
+          </button>
+          <div class="menu-list" id="menuRespaldo" hidden>
+            <button type="button" data-accion="descargar-respaldo"><i class="fas fa-download" aria-hidden="true"></i> Descargar respaldo (.json)</button>
+            <button type="button" data-accion="restaurar-respaldo"><i class="fas fa-upload" aria-hidden="true"></i> Restaurar desde un respaldo</button>
+            <button type="button" data-accion="imprimir"><i class="fas fa-print" aria-hidden="true"></i> Imprimir tablero</button>
+          </div>
         </div>
+        <input type="file" id="archivoRespaldo" accept=".json,application/json" hidden>
       </div>
     </div>
-
-    <div class="card">
-      <h2><i class="fas fa-table-list"></i> Desglose de interés por mes</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Mes</th><th>Días</th><th>Interés</th></tr>
-          </thead>
-          <tbody id="tablaBody"></tbody>
-        </table>
-      </div>
-      <div id="cruceNota" class="note hidden">
-        <i class="fas fa-triangle-exclamation"></i>
-        <span id="cruceNotaTexto"></span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2><i class="fas fa-receipt"></i> Totales</h2>
-      <div class="total-line">
-        <span class="lbl">Interés total (24 días)</span>
-        <span id="interesTotal">-</span>
-      </div>
-      <div class="total-line">
-        <span class="lbl">Impuesto (<span id="impPctLbl">5</span>%)</span>
-        <span id="impuestoTotal">-</span>
-      </div>
-      <div class="total-line">
-        <span class="lbl">Interés neto (después de impuesto)</span>
-        <span id="interesNeto">-</span>
-      </div>
-      <div class="total-line big">
-        <span class="lbl">Total a pagar (capital + interés)</span>
-        <span id="totalPagar">-</span>
-      </div>
-    </div>
-  </div>
-
-  <div id="tablero" class="card">
-    <h2><i class="fas fa-table-cells-large"></i> Tablero de datos acumulado</h2>
-    <button class="export-btn" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+    <p class="hint" id="hintRespaldo"><i class="fas fa-circle-info" aria-hidden="true"></i> Los contratos se guardan solo en este navegador. Descarga un respaldo de vez en cuando.</p>
     <div id="ledgerContenedor"></div>
-  </div>
+    <button type="button" class="btn btn-danger-ghost btn-block" data-accion="vaciar" id="btnVaciar">
+      <i class="fas fa-trash-can" aria-hidden="true"></i> Vaciar tablero
+    </button>
+  </section>
+
+  <section id="resumenMensual" class="card card-wide" aria-labelledby="t-mensual">
+    <h2 id="t-mensual"><i class="fas fa-calendar-days" aria-hidden="true"></i> Interés facturado por mes</h2>
+    <p class="hint">Suma de las facturas según su fecha. Útil para declarar el impuesto del mes.</p>
+    <div id="mensualContenedor"></div>
+  </section>
+
+  <footer class="pie">Herramientas Contables · los datos se guardan solo en este navegador</footer>
 </div>
 
-<script src="script.js"></script>
+<dialog id="dialogo" aria-labelledby="dialogoTitulo">
+  <form method="dialog">
+    <h3 id="dialogoTitulo"></h3>
+    <p id="dialogoTexto"></p>
+    <div class="dialog-actions">
+      <button value="cancelar" class="btn">Cancelar</button>
+      <button value="aceptar" class="btn btn-danger" id="dialogoAceptar">Aceptar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden>
+  <span id="toastTexto"></span>
+  <button type="button" id="toastAccion" class="toast-btn" hidden></button>
+</div>
+
+<script src="js/calculo.js"></script>
+<script src="js/almacenamiento.js"></script>
+<script src="js/excel.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@ no hay servidor, base de datos ni instalación.
 
 | Herramienta | Carpeta | Para qué sirve |
 |---|---|---|
-| Calculadora de Interés Simple | `herramientas/calculadora-interes-simple/` | Calcula el interés de préstamos a plazo en días, lo parte por mes calendario (factura 1 y factura 2), lleva un tablero acumulado de contratos y lo exporta a Excel. |
+| Calculadora de Interés Simple | `herramientas/calculadora-interes-simple/` | Calcula el interés de préstamos a plazo en días, lo parte por mes calendario (factura 1 y factura 2), lleva un tablero de contratos, resume el interés facturado por mes, exporta a Excel y permite guardar/restaurar respaldos. |
 
 Detalle de cada una en [`docs/`](docs/).
 
@@ -45,18 +45,37 @@ Luego entra a <http://localhost:8000>. También sirve la extensión
 ├── index.html            # Página principal (menú de pestañas)
 ├── script.js             # Lista de herramientas y lógica del menú
 ├── style.css             # Estilos de la página principal
+├── favicon.svg           # Ícono del sitio
 ├── herramientas/
 │   └── calculadora-interes-simple/
 │       ├── index.html    # Interfaz de la calculadora
-│       ├── script.js     # Cálculo, tablero, exportación a Excel
-│       └── style.css     # Estilos de la calculadora
+│       ├── style.css     # Estilos de la calculadora
+│       └── js/
+│           ├── calculo.js        # Fórmulas (sin pantalla): se prueba aparte
+│           ├── almacenamiento.js # Guardado en el navegador, migraciones, respaldos
+│           ├── excel.js          # Exportación a Excel
+│           └── app.js            # Pantalla: formulario, tablero, avisos
+├── tests/                # Pruebas automáticas de los cálculos
 ├── docs/                 # Documentación
+├── package.json          # Comando de pruebas (npm test)
 ├── CHANGELOG.md          # Historial de cambios
 └── README.md
 ```
 
 La página principal carga cada herramienta dentro de un `<iframe>`, así cada
 una es independiente (su propio HTML, CSS y JS) y no se rompen entre sí.
+
+## Pruebas
+
+Los cálculos tienen pruebas automáticas, entre ellas una que compara 2000
+préstamos al azar con la fórmula original para asegurar que los montos no
+cambien. Con [Node.js](https://nodejs.org/) 18 o superior:
+
+```bash
+npm test
+```
+
+No hace falta instalar nada más (no hay dependencias).
 
 ## Documentación
 
@@ -70,7 +89,7 @@ una es independiente (su propio HTML, CSS y JS) y no se rompen entre sí.
 Se cargan desde CDN (requieren internet):
 
 - [Font Awesome 6.5.1](https://fontawesome.com/) — íconos.
-- [SheetJS (xlsx) 0.18.5](https://sheetjs.com/) — exportación a Excel (solo en la calculadora).
+- [SheetJS (xlsx) 0.18.5](https://sheetjs.com/) — exportación a Excel (solo en la calculadora; se descarga recién al exportar).
 
 ## Autor
 

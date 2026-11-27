@@ -46,6 +46,7 @@ Solo cuando el cambio está probado:
 
 ## Lista de verificación antes de publicar
 
+- [ ] `npm test` pasa sin errores.
 - [ ] La herramienta abre sin errores (revisar la consola del navegador, F12).
 - [ ] Un cálculo de ejemplo da los mismos resultados que antes
       (ver el ejemplo en [calculadora-interes-simple.md](calculadora-interes-simple.md)).
@@ -60,9 +61,11 @@ Los contratos viven en el `localStorage` del navegador que se use en la página
 publicada. **No hay copia en ningún servidor.** Por eso:
 
 - No cambiar los nombres de las claves `interesSimpleTableroLedger`,
-  `interesSimpleContratoContador` ni `hubUltimaHerramienta`; si se cambian,
-  el tablero aparecerá vacío.
+  `interesSimpleContratoContador`, `interesSimplePreferencias` ni
+  `hubUltimaHerramienta`; si se cambian, el tablero aparecerá vacío.
 - Si se agrega o renombra un campo de los registros, añadir una migración en
-  `leerLedger()` (como las que ya existen) en lugar de asumir que todos los
+  `migrarRegistros()` de `js/calculo.js` (como las que ya existen) y una
+  prueba en `tests/calculo.test.js`, en lugar de asumir que todos los
   registros tienen el campo nuevo.
-- Recomendación de uso: exportar a Excel con regularidad como respaldo.
+- Recomendación de uso: descargar un respaldo (menú **Respaldo**) con
+  regularidad. Se puede restaurar en cualquier navegador.

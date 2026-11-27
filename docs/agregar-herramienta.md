@@ -27,12 +27,16 @@ Trabaja siempre en la rama `desarrollo` (ver [flujo de trabajo](flujo-de-trabajo
 
    No hace falta tocar nada más: la pestaña se genera sola.
 
-3. **Usar claves propias de `localStorage`** si la herramienta guarda datos,
+3. **Separar cálculo y pantalla** (recomendado): pon las fórmulas en un
+   archivo aparte sin acceso a la página, como `js/calculo.js` de la
+   calculadora, y agrega sus pruebas en `tests/<nombre>.test.js`.
+
+4. **Usar claves propias de `localStorage`** si la herramienta guarda datos,
    con un prefijo único (por ejemplo `conversorMoneda...`), para no pisar los
    datos de otras herramientas.
 
-4. **Documentarla:** crear `docs/<nombre>.md` y agregarla a la tabla de
+5. **Documentarla:** crear `docs/<nombre>.md` y agregarla a la tabla de
    herramientas del `README.md`.
 
-5. **Probar en local**, anotar en `CHANGELOG.md` y luego publicar siguiendo el
+6. **Probar en local** (`npm test` y en el navegador), anotar en `CHANGELOG.md` y luego publicar siguiendo el
    [flujo de trabajo](flujo-de-trabajo.md#publicar-a-producción-pasar-a-main).
