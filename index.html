@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Herramientas web sencillas para llevar la contabilidad de préstamos.">
+<meta name="description" content="Herramientas web sencillas para llevar la contabilidad de una empresa.">
 <meta name="theme-color" content="#2563eb">
 <title>Herramientas Contables</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -11,13 +11,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1><i class="fas fa-toolbox" aria-hidden="true"></i> Herramientas Contables</h1>
-  </header>
+  <aside class="lateral" id="lateral" aria-label="Herramientas">
+    <a class="marca" href="#inicio">
+      <img src="favicon.svg" alt="" width="32" height="32">
+      <span>Herramientas<br><strong>Contables</strong></span>
+    </a>
+    <div class="buscador">
+      <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+      <input type="search" id="buscarHerramienta" placeholder="Buscar herramienta" aria-label="Buscar herramienta" autocomplete="off">
+    </div>
+    <nav id="menu" class="menu" aria-label="Menú de herramientas"></nav>
+    <footer class="lateral-pie" id="contadorHerramientas"></footer>
+  </aside>
+  <div class="fondo-menu" id="fondoMenu" aria-hidden="true"></div>
 
-  <nav class="tabs" id="tabs" role="tablist" aria-label="Herramientas"></nav>
-
-  <main id="main"></main>
+  <div class="principal">
+    <header class="barra-movil">
+      <button type="button" class="btn-menu" id="btnMenu" aria-controls="lateral" aria-expanded="false" aria-label="Abrir menú">
+        <i class="fas fa-bars" aria-hidden="true"></i>
+      </button>
+      <span id="tituloActual">Inicio</span>
+    </header>
+    <main id="contenido" class="contenido"></main>
+  </div>
 
   <script src="script.js"></script>
 </body>

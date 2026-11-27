@@ -6,26 +6,34 @@ Es un sitio estático (HTML + CSS + JavaScript puro, sin frameworks ni paso de
 compilación). Se publica tal cual en GitHub Pages.
 
 ```
-index.html  ──► script.js (lista HERRAMIENTAS)
-                    │  crea una pestaña por herramienta
-                    ▼
-              <iframe src="herramientas/<nombre>/index.html">
-                    │
-                    ▼
-        Herramienta independiente (su propio HTML/CSS/JS)
+index.html  ──► script.js (lista SECCIONES)
+   │               │  arma el menú lateral agrupado por tema
+   │               ▼
+   │      ¿la herramienta tiene ruta?
+   │        ├─ sí → <iframe src="herramientas/<id>/index.html">
+   │        └─ no → página "Próximamente" (herramienta planificada)
+   └── #inicio → tarjetas con todas las herramientas por sección
 ```
 
 ## Página principal (raíz)
 
-- `script.js` define el arreglo `HERRAMIENTAS`. Cada elemento tiene:
-  - `id`: identificador único (texto sin espacios).
-  - `nombre`: texto de la pestaña.
+Es un panel con menú lateral a la izquierda y la herramienta a la derecha.
+En celular el menú se abre con el botón ☰.
+
+- `script.js` define `SECCIONES`: cada sección tiene un `titulo` y una lista
+  de `herramientas` con:
+  - `id`: identificador único (texto sin espacios); también es la URL (`#id`).
+  - `nombre`: texto del menú.
   - `icono`: clase de Font Awesome (por ejemplo `fa-calculator`).
-  - `ruta`: ruta al `index.html` de la herramienta.
-- `renderTabs()` dibuja las pestañas; `seleccionarHerramienta(id)` carga la
-  herramienta en un `<iframe>`.
-- Guarda la última herramienta abierta en `localStorage`
-  (clave `hubUltimaHerramienta`) para volver a abrirla al recargar.
+  - `descripcion`: una línea sobre qué hace (se ve en el inicio y al pasar el mouse).
+  - `ruta`: `index.html` de la herramienta. **Sin `ruta`, la herramienta se
+    muestra como "Próximamente"** y sirve solo de referencia.
+- `mostrar(id)` decide qué ver: la herramienta en un `<iframe>`, la página de
+  "Próximamente" o el inicio.
+- El buscador del menú filtra por nombre, sección y descripción.
+- Cada herramienta tiene su enlace directo, por ejemplo `.../#interes-simple`.
+- Se recuerda la última herramienta **disponible** abierta en `localStorage`
+  (clave `hubUltimaHerramienta`) para volver a ella al entrar.
 
 ## Herramientas
 

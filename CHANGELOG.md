@@ -19,6 +19,11 @@ contratos ya guardados se siguen leyendo sin cambios.
 - Vista de tarjetas para el tablero en el celular.
 - Impresión del tablero.
 - Se recuerdan la última tasa, plazo e impuesto usados.
+- Panel principal con menú lateral agrupado por temas (préstamos e
+  intereses, impuestos, estados financieros, planilla, tesorería), página de
+  inicio con todas las herramientas y buscador.
+- Herramientas planificadas visibles como "Próximamente" (ver
+  `docs/hoja-de-ruta.md`).
 - Enlace directo a cada herramienta (`#interes-simple`) e ícono del sitio.
 - Pruebas automáticas (`npm test`) y documentación.
 
@@ -31,7 +36,7 @@ contratos ya guardados se siguen leyendo sin cambios.
 - SheetJS se descarga solo al exportar (la página carga más rápido).
 - Diseño renovado: formulario y resumen lado a lado en pantallas grandes,
   mejor contraste en modo oscuro, foco visible con teclado.
-- Página principal renombrada a "Herramientas Contables".
+- Página principal renombrada a "Herramientas Contables"; en celular el menú se abre con ☰.
 
 ### Corregido
 - La etiqueta "Interés total (24 días)" ahora muestra el plazo ingresado.

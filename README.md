@@ -8,7 +8,13 @@ no hay servidor, base de datos ni instalación.
 > en el trabajo diario. **No se desarrolla directamente sobre `main`.**
 > Lee [docs/flujo-de-trabajo.md](docs/flujo-de-trabajo.md) antes de hacer cambios.
 
-## Herramientas disponibles
+## Herramientas
+
+La página principal es un panel con un menú lateral que agrupa las
+herramientas por tema. Las que todavía no existen aparecen como
+**Próximamente** (ver la [hoja de ruta](docs/hoja-de-ruta.md)).
+
+### Disponibles
 
 | Herramienta | Carpeta | Para qué sirve |
 |---|---|---|
@@ -42,8 +48,8 @@ Luego entra a <http://localhost:8000>. También sirve la extensión
 
 ```
 .
-├── index.html            # Página principal (menú de pestañas)
-├── script.js             # Lista de herramientas y lógica del menú
+├── index.html            # Panel principal (menú lateral)
+├── script.js             # Lista de herramientas por sección y lógica del menú
 ├── style.css             # Estilos de la página principal
 ├── favicon.svg           # Ícono del sitio
 ├── herramientas/
@@ -62,7 +68,7 @@ Luego entra a <http://localhost:8000>. También sirve la extensión
 └── README.md
 ```
 
-La página principal carga cada herramienta dentro de un `<iframe>`, así cada
+El panel carga cada herramienta dentro de un `<iframe>`, así cada
 una es independiente (su propio HTML, CSS y JS) y no se rompen entre sí.
 
 ## Pruebas
@@ -79,6 +85,7 @@ No hace falta instalar nada más (no hay dependencias).
 
 ## Documentación
 
+- [Hoja de ruta](docs/hoja-de-ruta.md) — herramientas planificadas.
 - [Flujo de trabajo y ramas](docs/flujo-de-trabajo.md) — cómo desarrollar sin afectar la versión en uso.
 - [Arquitectura](docs/arquitectura.md) — cómo está armado el proyecto.
 - [Calculadora de Interés Simple](docs/calculadora-interes-simple.md) — reglas de cálculo, datos guardados y exportación.
