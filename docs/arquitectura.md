@@ -35,6 +35,23 @@ En celular el menú se abre con el botón ☰.
 - Se recuerda la última herramienta **disponible** abierta en `localStorage`
   (clave `hubUltimaHerramienta`) para volver a ella al entrar.
 
+## Código compartido (`compartido/`)
+
+Las herramientas nuevas comparten estilos y lógica para verse y comportarse
+igual:
+
+| Archivo | Qué contiene | Global |
+|---|---|---|
+| `util.js` | Fechas (meses completos, tiempo de servicio, días hábiles), redondeo a céntimos, impuesto por tramos, TIR. Funciona también en Node. | `Util` |
+| `parametros.js` | Valores legales vigentes con su fuente (ver [parametros.md](parametros.md)). | `Parametros` |
+| `laboral.js` | Gratificación, CTS, vacaciones truncas, indemnización y renta de 5.ª para régimen general y MYPE. Funciona en Node. | `Laboral` |
+| `base.js` | Formularios a partir de una lista de campos (validación, valores recordados, "Restablecer"), tablas, notas, formato de montos y exportación a Excel. | `HC` |
+| `base.css` | Estilos comunes, modo claro y oscuro, impresión. | — |
+
+Cada herramienta nueva tiene `js/calculo.js` (fórmulas puras, probadas en
+`tests/`) y `js/app.js` (pantalla). La calculadora de interés simple mantiene
+su propio código y estilos para no tocar los datos que ya se usan.
+
 ## Herramientas
 
 Cada herramienta vive en `herramientas/<nombre>/` con sus propios
@@ -76,6 +93,10 @@ Todo se guarda en `localStorage` del navegador:
 | `interesSimpleTableroLedger` | Calculadora de interés | Arreglo JSON con los contratos |
 | `interesSimpleContratoContador` | Calculadora de interés | Último N° de contrato usado |
 | `interesSimplePreferencias` | Calculadora de interés | Últimos tasa, plazo e impuesto usados |
+| `hc:<id>:formulario` | Herramientas nuevas | Últimos valores ingresados en el formulario |
+| `hc:flujo-caja:filas` | Flujo de caja | Conceptos y montos por mes |
+| `hc:depreciacion:activos` | Depreciación | Lista de activos fijos |
+| `hc:estado-resultados:ultimo` | Estado de resultados → Ratios | Último cálculo (ventas, costos, utilidades) |
 
 Limitaciones: los datos son por navegador y por dispositivo, se pierden si se
 borran los datos del sitio y no se sincronizan entre equipos. Para eso existe
@@ -87,6 +108,6 @@ se copia a una clave `interesSimpleTableroLedger_danado_<fecha>` y se avisa.
 ## Dependencias (CDN)
 
 - Font Awesome 6.5.1 (`all.min.js`) — íconos, en todas las páginas.
-- SheetJS 0.18.5 (`xlsx.full.min.js`) — solo en la calculadora; se descarga al presionar "Exportar a Excel".
+- SheetJS 0.18.5 (`xlsx.full.min.js`): se descarga al presionar "Exportar a Excel" (calculadora y herramientas nuevas).
 
 Sin internet la página funciona, pero sin íconos y sin exportar a Excel.

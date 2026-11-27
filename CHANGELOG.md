@@ -3,7 +3,26 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Las fechas son de publicación en `main`.
 
-## [Sin publicar] — rama `desarrollo` (versión 2)
+## [Sin publicar] — rama `desarrollo` (versión 3)
+
+### Agregado
+- 16 herramientas nuevas, con valores legales vigentes en Perú (revisados el 26/11/2026):
+  - Préstamos e intereses: interés compuesto, cronograma de cuotas (francés/alemán con TCEA),
+    conversor de tasas e interés moratorio (TIM de SUNAT).
+  - Impuestos: IGV (18 % = 15,5 % IGV + 2,5 % IPM), detracciones/retenciones/percepciones
+    y renta de 4.ª categoría.
+  - Estados financieros: estado de resultados y ratios financieros.
+  - Planilla y beneficios: sueldo neto, CTS, gratificaciones y liquidación (régimen general y MYPE).
+  - Tesorería y activos: tipo de cambio, flujo de caja y depreciación.
+- Código compartido en `compartido/` (estilos, formularios, Excel, fechas, reglas laborales, parámetros).
+- Pruebas automáticas de todas las herramientas nuevas.
+- Documentación: `docs/herramientas.md` y `docs/parametros.md` (con lista de revisión anual).
+
+### Pendiente
+- Balance desde Excel y conciliación bancaria: necesitan archivos de ejemplo
+  (ver `docs/hoja-de-ruta.md`).
+
+## Versión 2 (también sin publicar en `main`)
 
 Los cálculos dan exactamente los mismos montos que la versión 1 y los
 contratos ya guardados se siguen leyendo sin cambios.

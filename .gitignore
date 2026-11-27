@@ -10,3 +10,6 @@ desktop.ini
 
 # Exportaciones de prueba
 *.xlsx
+
+# Carpeta de salidas de la app de Claude
+Claude outputs/
